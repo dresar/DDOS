@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDOS Testing Tool - Edukasi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            color: #856404;
+        }
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .btn-start {
+            background: #28a745;
+            color: white;
+        }
+        .btn-start:hover {
+            background: #218838;
+        }
+        .btn-stop {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-stop:hover {
+            background: #c82333;
+        }
+        .btn-stop:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .console-section {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .console-header {
+            color: #fff;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .console-line {
+            margin: 5px 0;
+            word-wrap: break-word;
+        }
+        .console-line.info { color: #00ff00; }
+        .console-line.error { color: #ff0000; }
+        .console-line.warning { color: #ffaa00; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-active { background: #28a745; }
+        .status-inactive { background: #dc3545; }
+        .info-section {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .info-section h2 {
+            color: #2196F3;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .info-section h3 {
+            color: #1976D2;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .info-section p {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .info-section ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        .info-section li {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .info-box {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 3px solid #2196F3;
+        }
+        .info-box strong {
+            color: #1976D2;
+        }
+        .code-example {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .toggle-info {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 15px;
+            transition: background 0.3s;
+        }
+        .toggle-info:hover {
+            background: #1976D2;
+        }
+        .info-content {
+            display: none;
+        }
+        .info-content.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ DDOS Testing Tool</h1>
+        <p class="subtitle">Untuk Edukasi & Testing Keamanan Jaringan</p>
+        
+        <div class="warning">
+            <strong>⚠️ Peringatan:</strong> Tool ini hanya untuk tujuan edukasi di localhost. 
+            Jangan gunakan untuk testing server yang bukan milik Anda. Gunakan dengan bijak dan bertanggung jawab.
+        </div>
+
+        <div class="info-section">
+            <button class="toggle-info" onclick="toggleInfo()">📚 Tampilkan/Sembunyikan Penjelasan DDOS</button>
+            
+            <div class="info-content" id="infoContent">
+                <h2>🔍 Apa itu DDOS (Distributed Denial of Service)?</h2>
+                
+                <p>
+                    <strong>DDOS (Distributed Denial of Service)</strong> adalah serangan cyber yang bertujuan untuk 
+                    membuat layanan online menjadi tidak dapat diakses dengan cara membanjiri server target dengan 
+                    jumlah request yang sangat besar secara bersamaan dari banyak sumber yang berbeda.
+                </p>
+
+                <h3>🎯 Konsep Dasar DDOS</h3>
+                <div class="info-box">
+                    <p>
+                        <strong>1. Denial of Service (DoS):</strong><br>
+                        Serangan yang membuat layanan tidak dapat diakses oleh pengguna yang sah. 
+                        Biasanya dilakukan dari satu sumber (single source).
+                    </p>
+                    <p>
+                        <strong>2. Distributed Denial of Service (DDoS):</strong><br>
+                        Versi yang lebih canggih dimana serangan dilakukan dari banyak sumber secara bersamaan, 
+                        membuat serangan lebih sulit dihentikan dan lebih efektif.
+                    </p>
+                </div>
+
+                <h3>⚙️ Proses Serangan DDOS</h3>
+                <p>Serangan DDOS umumnya mengikuti proses berikut:</p>
+                
+                <ol style="margin-left: 20px; line-height: 1.8;">
+                    <li>
+                        <strong>Persiapan:</strong>
+                        <ul>
+                            <li>Attacker mengidentifikasi target (server, website, atau layanan)</li>
+                            <li>Menyiapkan botnet (jaringan komputer yang terinfeksi) atau menggunakan multiple sources</li>
+                            <li>Mengkonfigurasi tools untuk mengirim request secara bersamaan</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Inisiasi Serangan:</strong>
+                        <ul>
+                            <li>Mengirim banyak request HTTP/HTTPS ke server target secara bersamaan</li>
+                            <li>Menggunakan multiple threads atau connections untuk meningkatkan volume</li>
+                            <li>Mengurangi delay antar request untuk memaksimalkan throughput</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Efek pada Target:</strong>
+                        <ul>
+                            <li>Server menjadi overload karena terlalu banyak request yang harus diproses</li>
+                            <li>Bandwidth jaringan habis karena traffic yang sangat tinggi</li>
+                            <li>Resource server (CPU, RAM) habis sehingga tidak bisa melayani request normal</li>
+                            <li>Layanan menjadi lambat atau tidak dapat diakses sama sekali</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Deteksi & Mitigasi:</strong>
+                        <ul>
+                            <li>Server dapat mendeteksi pola traffic yang tidak normal</li>
+                            <li>Rate limiting diterapkan untuk membatasi request per IP</li>
+                            <li>Firewall atau DDoS protection service dapat memblokir traffic mencurigakan</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h3>🌐 Manipulasi IP Address</h3>
+                <p>
+                    Dalam serangan DDOS, attacker sering menggunakan teknik manipulasi IP address untuk 
+                    menyembunyikan identitas dan membuat serangan lebih efektif:
+                </p>
+
+                <div class="info-box">
+                    <p><strong>1. IP Spoofing:</strong></p>
+                    <p>
+                        Teknik mengubah source IP address dalam packet header untuk menyembunyikan identitas asli. 
+                        Dalam tool ini, kita menggunakan HTTP headers untuk simulasi:
+                    </p>
+                    <div class="code-example">
+X-Forwarded-For: 192.168.1.100<br>
+X-Real-IP: 10.0.0.50
+                    </div>
+                    <p>
+                        <strong>Catatan:</strong> Header ini hanya untuk demonstrasi. IP spoofing sebenarnya 
+                        memerlukan akses level rendah ke network stack dan tidak dapat dilakukan hanya dengan 
+                        HTTP headers biasa.
+                    </p>
+                </div>
+
+                <div class="info-box">
+                    <p><strong>2. Random IP Generation:</strong></p>
+                    <p>
+                        Tool ini dapat menghasilkan random IP address untuk setiap request melalui HTTP headers. 
+                        Ini membantu dalam:
+                    </p>
+                    <ul>
+                        <li>Menyembunyikan pola serangan</li>
+                        <li>Membuat rate limiting berdasarkan IP menjadi kurang efektif</li>
+                        <li>Menyimulasikan serangan dari banyak sumber yang berbeda</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <p><strong>3. Distributed Sources:</strong></p>
+                    <p>
+                        Serangan DDOS yang sesungguhnya menggunakan banyak komputer yang berbeda (botnet) 
+                        dengan IP address yang berbeda-beda. Ini membuat:
+                    </p>
+                    <ul>
+                        <li>Serangan lebih sulit dihentikan (tidak bisa hanya block satu IP)</li>
+                        <li>Traffic terlihat seperti berasal dari banyak pengguna normal</li>
+                        <li>Volume serangan bisa jauh lebih besar</li>
+                    </ul>
+                </div>
+
+                <h3>🛡️ Cara Melindungi dari DDOS</h3>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li><strong>Rate Limiting:</strong> Membatasi jumlah request per IP address dalam periode waktu tertentu</li>
+                    <li><strong>DDoS Protection Service:</strong> Menggunakan layanan seperti Cloudflare, AWS Shield, dll</li>
+                    <li><strong>Load Balancing:</strong> Mendistribusikan traffic ke multiple servers</li>
+                    <li><strong>Monitoring & Alerting:</strong> Memantau traffic patterns untuk mendeteksi anomali</li>
+                    <li><strong>Firewall Rules:</strong> Memblokir IP address yang mencurigakan</li>
+                    <li><strong>Scaling Resources:</strong> Meningkatkan kapasitas server untuk menangani traffic spike</li>
+                </ul>
+
+                <h3>📊 Bagaimana Tool Ini Bekerja?</h3>
+                <p>
+                    Tool ini mensimulasikan serangan DDOS dengan cara:
+                </p>
+                <ol style="margin-left: 20px; line-height: 1.8;">
+                    <li><strong>Multi-threading:</strong> Menggunakan banyak thread untuk mengirim request secara bersamaan</li>
+                    <li><strong>Concurrent Requests:</strong> Setiap thread mengirim banyak request secara berurutan</li>
+                    <li><strong>IP Spoofing (Opsional):</strong> Menggunakan random IP dalam HTTP headers untuk setiap request</li>
+                    <li><strong>Monitoring:</strong> Melacak statistik seperti total request, success rate, dan rate limiting</li>
+                </ol>
+
+                <div class="info-box" style="background: #fff3cd; border-left-color: #ffc107;">
+                    <p>
+                        <strong>⚠️ Penting untuk Dipahami:</strong><br>
+                        Tool ini adalah untuk <strong>edukasi dan testing di lingkungan sendiri</strong>. 
+                        Menggunakan teknik serupa pada server yang bukan milik Anda adalah <strong>ilegal</strong> 
+                        dan dapat mengakibatkan konsekuensi hukum yang serius.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>⚙️ Konfigurasi Attack</h2>
+            
+            <div class="form-group">
+                <label for="targetUrl">Target URL:</label>
+                <input type="text" id="targetUrl" placeholder="http://127.0.0.1:5000/" value="http://127.0.0.1:5000/">
+            </div>
+
+            <div class="form-group">
+                <label for="numThreads">Jumlah Thread (Concurrent):</label>
+                <input type="number" id="numThreads" min="1" max="1000" value="10">
+            </div>
+
+            <div class="form-group">
+                <label for="numRequests">Total Request per Thread:</label>
+                <input type="number" id="numRequests" min="1" max="10000" value="100">
+            </div>
+
+            <div class="form-group">
+                <label for="delay">Delay antar Request (detik):</label>
+                <input type="number" id="delay" min="0" max="10" step="0.01" value="0.1">
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="useRandomIP" checked>
+                    <label for="useRandomIP">Gunakan Random IP (Spoof IP Address)</label>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-start" id="btnStart" onclick="startAttack()">🚀 Mulai Attack</button>
+                <button class="btn-stop" id="btnStop" onclick="stopAttack()" disabled>⏹️ Stop Attack</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Status</div>
+                <div class="stat-value">
+                    <span class="status-indicator status-inactive" id="statusIndicator"></span>
+                    <span id="statusText">Tidak Aktif</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Request</div>
+                <div class="stat-value" id="totalRequests">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Request Berhasil</div>
+                <div class="stat-value" id="successRequests">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Request Gagal</div>
+                <div class="stat-value" id="failedRequests">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Rate Limited</div>
+                <div class="stat-value" id="rateLimited">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Success Rate</div>
+                <div class="stat-value" id="successRate">0%</div>
+            </div>
+        </div>
+
+        <div class="console-section">
+            <div class="console-header">📺 Console - Log Attack</div>
+            <div id="consoleOutput"></div>
+        </div>
+    </div>
+
+    <script>
+        let attackInterval = null;
+        let isAttacking = false;
+
+        function addConsoleLog(message, type = 'info') {
+            const console = document.getElementById('consoleOutput');
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            line.textContent = `[${timestamp}] ${message}`;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function updateStats() {
+            fetch('/api/attack/stats')
+                .then(response => response.json())
+                .then(data => {
+                    const totalRequests = data.total_requests || 0;
+                    const successRequests = data.successful_requests || 0;
+                    const failedRequests = data.failed_requests || 0;
+                    const rateLimited = data.rate_limited || 0;
+                    
+                    document.getElementById('totalRequests').textContent = totalRequests.toLocaleString();
+                    document.getElementById('successRequests').textContent = successRequests.toLocaleString();
+                    document.getElementById('failedRequests').textContent = failedRequests.toLocaleString();
+                    document.getElementById('rateLimited').textContent = rateLimited.toLocaleString();
+                    
+                    if (totalRequests > 0) {
+                        const successRate = ((successRequests / totalRequests) * 100).toFixed(2);
+                        document.getElementById('successRate').textContent = successRate + '%';
+                    } else {
+                        document.getElementById('successRate').textContent = '0%';
+                    }
+                    
+                    // Update status indicator
+                    if (data.is_running) {
+                        document.getElementById('statusIndicator').className = 'status-indicator status-active';
+                        document.getElementById('statusText').textContent = 'Sedang Attack';
+                    } else {
+                        document.getElementById('statusIndicator').className = 'status-indicator status-inactive';
+                        document.getElementById('statusText').textContent = 'Tidak Aktif';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching stats:', error);
+                });
+        }
+
+        function startAttack() {
+            const targetUrl = document.getElementById('targetUrl').value;
+            const numThreads = parseInt(document.getElementById('numThreads').value);
+            const numRequests = parseInt(document.getElementById('numRequests').value);
+            const delay = parseFloat(document.getElementById('delay').value);
+            const useRandomIP = document.getElementById('useRandomIP').checked;
+
+            if (!targetUrl) {
+                addConsoleLog('ERROR: Target URL tidak boleh kosong!', 'error');
+                return;
+            }
+
+            addConsoleLog(`Memulai attack ke ${targetUrl}`, 'info');
+            addConsoleLog(`Konfigurasi: ${numThreads} thread, ${numRequests} request/thread, delay ${delay}s`, 'info');
+            addConsoleLog(`Random IP: ${useRandomIP ? 'Aktif' : 'Tidak Aktif'}`, 'info');
+
+            fetch('/api/attack/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    target_url: targetUrl,
+                    num_threads: numThreads,
+                    num_requests: numRequests,
+                    delay: delay,
+                    use_random_ip: useRandomIP
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    isAttacking = true;
+                    document.getElementById('btnStart').disabled = true;
+                    document.getElementById('btnStop').disabled = false;
+                    addConsoleLog('Attack dimulai!', 'info');
+                    addConsoleLog(`Target: ${targetUrl}`, 'info');
+                    addConsoleLog(`Threads: ${numThreads}, Requests/Thread: ${numRequests}`, 'info');
+                    addConsoleLog(`Total Request: ${(numThreads * numRequests).toLocaleString()}`, 'info');
+                    
+                    // Update stats setiap 1 detik
+                    if (!attackInterval) {
+                        let lastLogCount = 0;
+                        attackInterval = setInterval(() => {
+                            updateStats();
+                            // Tambahkan log progress setiap 500 requests
+                            fetch('/api/attack/stats')
+                                .then(r => r.json())
+                                .then(s => {
+                                    if (s.total_requests - lastLogCount >= 500) {
+                                        addConsoleLog(`Progress: ${s.total_requests.toLocaleString()} requests terkirim (${s.successful_requests} berhasil)`, 'info');
+                                        lastLogCount = s.total_requests;
+                                    }
+                                });
+                        }, 1000);
+                    }
+                } else {
+                    addConsoleLog(`ERROR: ${data.message}`, 'error');
+                }
+            })
+            .catch(error => {
+                addConsoleLog(`ERROR: ${error.message}`, 'error');
+            });
+        }
+
+        function stopAttack() {
+            fetch('/api/attack/stop', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    isAttacking = false;
+                    document.getElementById('btnStart').disabled = false;
+                    document.getElementById('btnStop').disabled = true;
+                    addConsoleLog('Attack dihentikan!', 'warning');
+                    
+                    if (attackInterval) {
+                        clearInterval(attackInterval);
+                        attackInterval = null;
+                    }
+                    
+                    // Update stats terakhir dan tampilkan summary
+                    fetch('/api/attack/stats')
+                        .then(r => r.json())
+                        .then(s => {
+                            addConsoleLog(`Summary: ${s.total_requests.toLocaleString()} total, ${s.successful_requests.toLocaleString()} berhasil, ${s.failed_requests.toLocaleString()} gagal`, 'info');
+                            if (s.rate_limited > 0) {
+                                addConsoleLog(`Rate Limited: ${s.rate_limited.toLocaleString()} requests`, 'warning');
+                            }
+                            if (s.total_requests > 0) {
+                                const successRate = ((s.successful_requests / s.total_requests) * 100).toFixed(2);
+                                addConsoleLog(`Success Rate: ${successRate}%`, 'info');
+                            }
+                        });
+                    
+                    updateStats();
+                }
+            })
+            .catch(error => {
+                addConsoleLog(`ERROR: ${error.message}`, 'error');
+            });
+        }
+
+        // Update stats saat halaman dimuat dan setiap 1 detik jika attack aktif
+        updateStats();
+        setInterval(() => {
+            if (isAttacking) {
+                updateStats();
+            }
+        }, 1000);
+        
+        // Update stats setiap 5 detik jika tidak attack
+        setInterval(() => {
+            if (!isAttacking) {
+                updateStats();
+            }
+        }, 5000);
+
+        function toggleInfo() {
+            const infoContent = document.getElementById('infoContent');
+            infoContent.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>
+
